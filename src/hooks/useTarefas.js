@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as tarefaApi from '../api/tarefa';
+import { useAuthStore } from '../store/authStore';
 
 export function useTarefas({ enabled = true } = {}) {
   return useQuery({
@@ -17,12 +18,24 @@ export function useTarefasPorFilho(filhoId) {
   });
 }
 
+// GET /Tarefa/{tarefaId} é 🔒Pai (ver spec) — Filho não pode chamá-lo. Pro
+// Filho, deriva a tarefa da lista de /Tarefa/ObterTodas (🔒 qualquer
+// autenticado, já filtrada pela própria família), que ele já tem permissão
+// de buscar.
 export function useTarefa(tarefaId) {
-  return useQuery({
+  const perfil = useAuthStore((state) => state.user?.perfil);
+  const isPai = perfil === 'Pai';
+
+  const paiQuery = useQuery({
     queryKey: ['tarefa', tarefaId],
     queryFn: async () => (await tarefaApi.obterTarefa(tarefaId)).data,
-    enabled: !!tarefaId,
+    enabled: isPai && !!tarefaId,
   });
+
+  const todasQuery = useTarefas({ enabled: !isPai && !!tarefaId });
+
+  if (isPai) return paiQuery;
+  return { ...todasQuery, data: todasQuery.data?.find((t) => t.tarefaId === tarefaId) };
 }
 
 export function useCriarTarefa() {

@@ -24,11 +24,10 @@ export function obterUsuarios() {
   return apiRequest('/Usuario/ObterTodos');
 }
 
-// Endpoint combinado com o Ian (não fazia parte da spec original): GET
-// /Usuario/MeusFilhos, 🔒Pai, devolve só os filhos vinculados ao Pai logado
-// (via pais_filhos), no mesmo formato cru de RetornoUsuarioDto[] usado por
-// ObterTodos — sem esse endpoint não dá pra montar a Home do Pai nem obter o
-// filhoId necessário pra Pontuação/Recompensa/Mesada/RegistroFinanceiro.
+// GET /Usuario/MeusFilhos, 🔒Pai, devolve só os filhos vinculados ao Pai
+// logado (via pais_filhos), no mesmo formato cru de RetornoUsuarioDto[] usado
+// por ObterTodos — sem esse endpoint não dá pra montar a Home do Pai nem
+// obter o filhoId necessário pra Pontuação/Recompensa/Mesada/RegistroFinanceiro.
 export function listarMeusFilhos() {
   return apiRequest('/Usuario/MeusFilhos');
 }

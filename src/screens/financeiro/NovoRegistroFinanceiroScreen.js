@@ -6,11 +6,14 @@ import { Button } from '../../components/Button';
 import { FormError } from '../../components/FormError';
 import { LoadingView } from '../../components/LoadingView';
 import { useMesadasPorFilho, useCategorias, useCriarCategoria, useCriarRegistroFinanceiro } from '../../hooks/useFinanceiro';
+import { useAuthStore } from '../../store/authStore';
 import { MESES_LABEL } from '../../constants/enums';
 import { colors, radius, spacing, typography } from '../../theme';
 
 export function NovoRegistroFinanceiroScreen({ route, navigation }) {
   const { filhoId } = route.params;
+  const perfil = useAuthStore((state) => state.user?.perfil);
+  const isPai = perfil === 'Pai';
 
   const { data: mesadas = [], isLoading: loadingMesadas } = useMesadasPorFilho(filhoId);
   const { data: categorias = [], isLoading: loadingCategorias } = useCategorias();
@@ -111,21 +114,23 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
         ))}
       </View>
 
-      {mostrarNovaCategoria ? (
-        <View style={styles.novaCategoriaRow}>
-          <TextField
-            value={novaCategoria}
-            onChangeText={setNovaCategoria}
-            placeholder="Nome da categoria"
-            style={styles.novaCategoriaField}
-          />
-          <Button title="Adicionar" onPress={handleCriarCategoria} loading={criarCategoria.isPending} />
-        </View>
-      ) : (
-        <Text style={styles.linkText} onPress={() => setMostrarNovaCategoria(true)}>
-          + Criar nova categoria
-        </Text>
-      )}
+      {isPai ? (
+        mostrarNovaCategoria ? (
+          <View style={styles.novaCategoriaRow}>
+            <TextField
+              value={novaCategoria}
+              onChangeText={setNovaCategoria}
+              placeholder="Nome da categoria"
+              style={styles.novaCategoriaField}
+            />
+            <Button title="Adicionar" onPress={handleCriarCategoria} loading={criarCategoria.isPending} />
+          </View>
+        ) : (
+          <Text style={styles.linkText} onPress={() => setMostrarNovaCategoria(true)}>
+            + Criar nova categoria
+          </Text>
+        )
+      ) : null}
 
       <TextField
         label="Descrição"
