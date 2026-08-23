@@ -24,17 +24,10 @@ export function obterUsuarios() {
   return apiRequest('/Usuario/ObterTodos');
 }
 
-// GET /Usuario/MeusFilhos, 🔒Pai, devolve só os filhos vinculados ao Pai
-// logado (via pais_filhos), no mesmo formato cru de RetornoUsuarioDto[] usado
-// por ObterTodos — sem esse endpoint não dá pra montar a Home do Pai nem
-// obter o filhoId necessário pra Pontuação/Recompensa/Mesada/RegistroFinanceiro.
 export function listarMeusFilhos() {
   return apiRequest('/Usuario/MeusFilhos');
 }
 
-// GET /Usuario/MeuPerfil, 🔒 qualquer autenticado, devolve o RetornoUsuarioDto
-// cru de quem está logado (Pai ou Filho) via ICurrentUserService — usado pela
-// tela de Perfil, sem precisar decodificar o JWT pra descobrir o próprio Id.
 export function obterMeuPerfil() {
   return apiRequest('/Usuario/MeuPerfil');
 }

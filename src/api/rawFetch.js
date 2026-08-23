@@ -2,8 +2,6 @@ import { API_BASE_URL } from '../config/env';
 import { readApiResponse } from '../utils/apiResponse';
 import { ApiError } from './errors';
 
-// Para endpoints públicos (login, cadastro, confirmação de e-mail, etc.) que
-// não devem passar pelo interceptor de token/refresh de src/api/client.js.
 export async function publicRequest(path, { method = 'GET', body } = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method,

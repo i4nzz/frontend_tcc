@@ -8,7 +8,6 @@ export function obterComprovacao(id) {
   return apiRequest(`/ComprovacaoTarefa/${id}`);
 }
 
-// foto: { uri, name, type } — formato aceito pelo FormData do React Native.
 export function enviarComprovacao({ tarefaId, foto }) {
   const formData = new FormData();
   formData.append('TarefaId', String(tarefaId));

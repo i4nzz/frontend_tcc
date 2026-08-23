@@ -17,9 +17,6 @@ export function criarTarefa(payload) {
   return apiRequest('/Tarefa/CriarTarefa', { method: 'POST', body: payload });
 }
 
-// PUT/DELETE de Tarefa sempre respondem 200, mesmo em erro (bug conhecido do
-// backend, ver seção 6 da spec) — a única forma de saber se deu certo é olhar
-// palavras-chave de erro na mensagem de texto devolvida.
 function pareceMensagemDeErro(mensagem) {
   if (!mensagem) return false;
   const texto = mensagem.toLowerCase();
