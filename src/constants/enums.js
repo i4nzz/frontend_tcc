@@ -1,5 +1,7 @@
 export const PerfilUsuario = { PAI: 1, FILHO: 2 };
 
+export const PerfilUsuarioLabel = { 1: 'Pai', 2: 'Filho' };
+
 export const StatusValidacaoTarefa = {
   PENDENTE: 1,
   APROVADA: 2,

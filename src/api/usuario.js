@@ -31,3 +31,10 @@ export function obterUsuarios() {
 export function listarMeusFilhos() {
   return apiRequest('/Usuario/MeusFilhos');
 }
+
+// GET /Usuario/MeuPerfil, 🔒 qualquer autenticado, devolve o RetornoUsuarioDto
+// cru de quem está logado (Pai ou Filho) via ICurrentUserService — usado pela
+// tela de Perfil, sem precisar decodificar o JWT pra descobrir o próprio Id.
+export function obterMeuPerfil() {
+  return apiRequest('/Usuario/MeuPerfil');
+}

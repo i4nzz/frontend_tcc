@@ -1,53 +1,41 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomePaiScreen } from '../screens/pai/HomePaiScreen';
-import { CadastrarFilhoScreen } from '../screens/pai/CadastrarFilhoScreen';
-import { FilhoAreaTabs } from './FilhoAreaTabs';
-import { DetalheTarefaScreen } from '../screens/tarefas/DetalheTarefaScreen';
-import { CriarEditarTarefaScreen } from '../screens/tarefas/CriarEditarTarefaScreen';
-import { CriarEditarRecompensaScreen } from '../screens/recompensas/CriarEditarRecompensaScreen';
-import { NovoRegistroFinanceiroScreen } from '../screens/financeiro/NovoRegistroFinanceiroScreen';
-import { LogoutButton } from '../components/LogoutButton';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Ionicons } from '@expo/vector-icons';
+import { PaiStackNavigator } from './PaiStackNavigator';
+import { PerfilScreen } from '../screens/perfil/PerfilScreen';
 import { colors } from '../theme';
 
-const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
 export function PaiNavigator() {
   return (
-    <Stack.Navigator
+    <Drawer.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: colors.surface },
-        headerTintColor: colors.text,
-        headerShadowVisible: false,
-        contentStyle: { backgroundColor: colors.background },
+        headerShown: false,
+        drawerActiveTintColor: colors.primary,
+        drawerInactiveTintColor: colors.text,
+        drawerActiveBackgroundColor: colors.warningBg,
       }}
     >
-      <Stack.Screen
-        name="HomePai"
-        component={HomePaiScreen}
-        options={{ title: 'Meus filhos', headerRight: () => <LogoutButton /> }}
+      <Drawer.Screen
+        name="PaiInicio"
+        component={PaiStackNavigator}
+        options={{
+          title: 'Início',
+          drawerIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
+        }}
       />
-      <Stack.Screen name="CadastrarFilho" component={CadastrarFilhoScreen} options={{ title: 'Cadastrar filho' }} />
-      <Stack.Screen
-        name="FilhoArea"
-        component={FilhoAreaTabs}
-        options={({ route }) => ({ title: route.params?.nomeFilho ?? 'Filho' })}
+      <Drawer.Screen
+        name="Perfil"
+        component={PerfilScreen}
+        options={{
+          headerShown: true,
+          title: 'Perfil',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.text,
+          headerShadowVisible: false,
+          drawerIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
+        }}
       />
-      <Stack.Screen name="DetalheTarefa" component={DetalheTarefaScreen} options={{ title: 'Tarefa' }} />
-      <Stack.Screen
-        name="CriarEditarTarefa"
-        component={CriarEditarTarefaScreen}
-        options={({ route }) => ({ title: route.params?.tarefaId ? 'Editar tarefa' : 'Nova tarefa' })}
-      />
-      <Stack.Screen
-        name="CriarEditarRecompensa"
-        component={CriarEditarRecompensaScreen}
-        options={({ route }) => ({ title: route.params?.recompensaId ? 'Editar recompensa' : 'Nova recompensa' })}
-      />
-      <Stack.Screen
-        name="NovoRegistroFinanceiro"
-        component={NovoRegistroFinanceiroScreen}
-        options={{ title: 'Novo gasto' }}
-      />
-    </Stack.Navigator>
+    </Drawer.Navigator>
   );
 }

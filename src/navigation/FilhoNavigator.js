@@ -1,38 +1,41 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuthStore } from '../store/authStore';
-import { FilhoAreaTabs } from './FilhoAreaTabs';
-import { DetalheTarefaScreen } from '../screens/tarefas/DetalheTarefaScreen';
-import { NovoRegistroFinanceiroScreen } from '../screens/financeiro/NovoRegistroFinanceiroScreen';
-import { LogoutButton } from '../components/LogoutButton';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Ionicons } from '@expo/vector-icons';
+import { FilhoStackNavigator } from './FilhoStackNavigator';
+import { PerfilScreen } from '../screens/perfil/PerfilScreen';
 import { colors } from '../theme';
 
-const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
 export function FilhoNavigator() {
-  const filhoId = useAuthStore((state) => state.userId);
-  const nomeFilho = useAuthStore((state) => state.user?.nome);
-
   return (
-    <Stack.Navigator
+    <Drawer.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: colors.surface },
-        headerTintColor: colors.text,
-        headerShadowVisible: false,
-        contentStyle: { backgroundColor: colors.background },
+        headerShown: false,
+        drawerActiveTintColor: colors.primary,
+        drawerInactiveTintColor: colors.text,
+        drawerActiveBackgroundColor: colors.warningBg,
       }}
     >
-      <Stack.Screen
-        name="FilhoArea"
-        component={FilhoAreaTabs}
-        initialParams={{ filhoId, nomeFilho }}
-        options={{ title: nomeFilho ?? 'Task Kids', headerRight: () => <LogoutButton /> }}
+      <Drawer.Screen
+        name="FilhoInicio"
+        component={FilhoStackNavigator}
+        options={{
+          title: 'Início',
+          drawerIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
+        }}
       />
-      <Stack.Screen name="DetalheTarefa" component={DetalheTarefaScreen} options={{ title: 'Tarefa' }} />
-      <Stack.Screen
-        name="NovoRegistroFinanceiro"
-        component={NovoRegistroFinanceiroScreen}
-        options={{ title: 'Novo gasto' }}
+      <Drawer.Screen
+        name="Perfil"
+        component={PerfilScreen}
+        options={{
+          headerShown: true,
+          title: 'Perfil',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.text,
+          headerShadowVisible: false,
+          drawerIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
+        }}
       />
-    </Stack.Navigator>
+    </Drawer.Navigator>
   );
 }
