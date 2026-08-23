@@ -30,7 +30,10 @@ export function useCriarMesada(filhoId) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: mesadaApi.criarMesada,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['mesadas', filhoId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mesadas', filhoId] });
+      queryClient.invalidateQueries({ queryKey: ['resumo-financeiro', filhoId] });
+    },
   });
 }
 
@@ -46,6 +49,18 @@ export function useCriarRegistroFinanceiro(filhoId) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: registroApi.criarRegistroFinanceiro,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['registros-financeiros', filhoId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['registros-financeiros', filhoId] });
+      queryClient.invalidateQueries({ queryKey: ['resumo-financeiro', filhoId] });
+      queryClient.invalidateQueries({ queryKey: ['mesadas', filhoId] });
+    },
+  });
+}
+
+export function useResumoFinanceiro(filhoId) {
+  return useQuery({
+    queryKey: ['resumo-financeiro', filhoId],
+    queryFn: async () => (await registroApi.obterResumoFinanceiro(filhoId)).data ?? null,
+    enabled: !!filhoId,
   });
 }

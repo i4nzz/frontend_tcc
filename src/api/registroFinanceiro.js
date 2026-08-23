@@ -7,3 +7,7 @@ export function listarRegistrosPorFilho(filhoId) {
 export function criarRegistroFinanceiro(payload) {
   return apiRequest('/RegistroFinanceiro/Criar', { method: 'POST', body: payload });
 }
+
+export function obterResumoFinanceiro(filhoId) {
+  return apiRequest(`/RegistroFinanceiro/ObterResumo/${filhoId}`);
+}

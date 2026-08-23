@@ -6,10 +6,12 @@ import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { TextField } from '../../components/TextField';
 import { FormError } from '../../components/FormError';
-import { useMesadasPorFilho, useCriarMesada, useRegistrosPorFilho } from '../../hooks/useFinanceiro';
+import { useMesadasPorFilho, useCriarMesada, useRegistrosPorFilho, useResumoFinanceiro } from '../../hooks/useFinanceiro';
 import { useAuthStore } from '../../store/authStore';
 import { MESES_LABEL } from '../../constants/enums';
 import { colors, radius, spacing, typography } from '../../theme';
+
+const CORES_CATEGORIA = [colors.primary, colors.accent, colors.grass, colors.star, colors.sky];
 
 function formatarValor(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -26,6 +28,7 @@ export function FinanceiroScreen({ route, navigation }) {
 
   const { data: mesadas = [], isLoading: loadingMesadas } = useMesadasPorFilho(filhoId);
   const { data: registros = [], isLoading: loadingRegistros } = useRegistrosPorFilho(filhoId);
+  const { data: resumo, isLoading: loadingResumo } = useResumoFinanceiro(filhoId);
   const criarMesada = useCriarMesada(filhoId);
 
   const [mostrarFormMesada, setMostrarFormMesada] = useState(false);
@@ -34,7 +37,7 @@ export function FinanceiroScreen({ route, navigation }) {
   const [anoMesada, setAnoMesada] = useState(String(new Date().getFullYear()));
   const [error, setError] = useState(null);
 
-  if (loadingMesadas || loadingRegistros) return <LoadingView />;
+  if (loadingMesadas || loadingRegistros || loadingResumo) return <LoadingView />;
 
   async function handleCriarMesada() {
     setError(null);
@@ -68,6 +71,51 @@ export function FinanceiroScreen({ route, navigation }) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <FormError message={error} />
+
+      {resumo && (resumo.totalMesadas > 0 || resumo.totalGasto > 0) ? (
+        <Card style={styles.resumoCard}>
+          <View style={styles.resumoTotais}>
+            <View style={styles.resumoItem}>
+              <Text style={styles.resumoLabel}>Mesadas</Text>
+              <Text style={styles.resumoValor}>{formatarValor(resumo.totalMesadas)}</Text>
+            </View>
+            <View style={styles.resumoItem}>
+              <Text style={styles.resumoLabel}>Gasto</Text>
+              <Text style={[styles.resumoValor, { color: colors.danger }]}>{formatarValor(resumo.totalGasto)}</Text>
+            </View>
+            <View style={styles.resumoItem}>
+              <Text style={styles.resumoLabel}>Saldo</Text>
+              <Text style={[styles.resumoValor, { color: colors.success }]}>{formatarValor(resumo.saldoDisponivel)}</Text>
+            </View>
+          </View>
+
+          {resumo.gastosPorCategoria.length > 0 ? (
+            <View style={styles.categoriasList}>
+              {resumo.gastosPorCategoria.map((categoria, index) => (
+                <View key={categoria.categoriaId} style={styles.categoriaRow}>
+                  <View style={styles.categoriaHeader}>
+                    <Text style={styles.categoriaNome}>{categoria.nomeCategoria}</Text>
+                    <Text style={styles.categoriaValor}>
+                      {formatarValor(categoria.total)} · {categoria.percentual.toFixed(0)}%
+                    </Text>
+                  </View>
+                  <View style={styles.barraFundo}>
+                    <View
+                      style={[
+                        styles.barraPreenchida,
+                        {
+                          width: `${Math.min(categoria.percentual, 100)}%`,
+                          backgroundColor: CORES_CATEGORIA[index % CORES_CATEGORIA.length],
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </Card>
+      ) : null}
 
       <Text style={styles.sectionTitle}>Mesadas</Text>
       {mesadas.length === 0 ? (
@@ -161,6 +209,18 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg },
   sectionTitle: { ...typography.subtitle, color: colors.text, marginBottom: spacing.sm },
   sectionSpacing: { marginTop: spacing.lg },
+  resumoCard: { marginBottom: spacing.lg },
+  resumoTotais: { flexDirection: 'row', justifyContent: 'space-between' },
+  resumoItem: { alignItems: 'center', flex: 1 },
+  resumoLabel: { ...typography.caption, color: colors.textMuted },
+  resumoValor: { ...typography.bodyBold, color: colors.text, marginTop: 2 },
+  categoriasList: { marginTop: spacing.md, gap: spacing.sm },
+  categoriaRow: { marginBottom: spacing.xs },
+  categoriaHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+  categoriaNome: { ...typography.body, color: colors.text },
+  categoriaValor: { ...typography.caption, color: colors.textMuted },
+  barraFundo: { height: 8, borderRadius: radius.pill, backgroundColor: colors.border, overflow: 'hidden' },
+  barraPreenchida: { height: '100%', borderRadius: radius.pill },
   sectionButton: { marginTop: spacing.sm },
   mesadaCard: { marginBottom: spacing.sm },
   mesadaValor: { ...typography.title, color: colors.primary },
