@@ -1,20 +1,29 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, radius, spacing, typography } from '../theme';
-import { StatusValidacaoTarefaLabel } from '../constants/enums';
+import { StatusValidacaoTarefaLabel, StatusTarefaLabel } from '../constants/enums';
 
-const STATUS_STYLE = {
+const COMPROVACAO_STYLE = {
   1: { bg: colors.warningBg, fg: colors.warning },
   2: { bg: colors.successBg, fg: colors.success },
   3: { bg: colors.dangerBg, fg: colors.danger },
 };
 
-export function StatusBadge({ status }) {
-  const style = STATUS_STYLE[status] ?? STATUS_STYLE[1];
+const TAREFA_STYLE = {
+  1: { bg: colors.border, fg: colors.textMuted },
+  2: { bg: colors.warningBg, fg: colors.warning },
+  3: { bg: colors.successBg, fg: colors.success },
+  4: { bg: colors.dangerBg, fg: colors.danger },
+};
+
+export function StatusBadge({ status, type = 'comprovacao' }) {
+  const isTarefa = type === 'tarefa';
+  const styleMap = isTarefa ? TAREFA_STYLE : COMPROVACAO_STYLE;
+  const labelMap = isTarefa ? StatusTarefaLabel : StatusValidacaoTarefaLabel;
+  const style = styleMap[status] ?? styleMap[1];
+
   return (
     <View style={[styles.badge, { backgroundColor: style.bg }]}>
-      <Text style={[styles.text, { color: style.fg }]}>
-        {StatusValidacaoTarefaLabel[status] ?? 'Pendente'}
-      </Text>
+      <Text style={[styles.text, { color: style.fg }]}>{labelMap[status] ?? 'Pendente'}</Text>
     </View>
   );
 }

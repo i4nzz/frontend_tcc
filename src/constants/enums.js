@@ -16,6 +16,22 @@ export const StatusValidacaoTarefaLabel = {
 
 export const TipoPontuacao = { GANHO: 1, RESGATE: 2 };
 
+// StatusTarefaEnum — calculado pelo backend a cada consulta (Prazo + comprovações),
+// não é um campo gravado no banco. Ver seção 5 da spec.
+export const StatusTarefa = {
+  PENDENTE: 1,
+  AGUARDANDO_VALIDACAO: 2,
+  CONCLUIDA: 3,
+  EXPIRADA: 4,
+};
+
+export const StatusTarefaLabel = {
+  1: 'Pendente',
+  2: 'Aguardando',
+  3: 'Concluída',
+  4: 'Expirada',
+};
+
 export const MESES_LABEL = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',

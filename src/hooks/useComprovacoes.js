@@ -1,4 +1,4 @@
-import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as comprovacaoApi from '../api/comprovacao';
 
 export function useComprovacoesPorTarefa(tarefaId) {
@@ -7,24 +7,6 @@ export function useComprovacoesPorTarefa(tarefaId) {
     queryFn: async () => (await comprovacaoApi.listarComprovacoesPorTarefa(tarefaId)).data ?? [],
     enabled: !!tarefaId,
   });
-}
-
-// Usa a mesma queryKey de useComprovacoesPorTarefa pra compartilhar cache —
-// só serve pra decorar a lista de tarefas com um badge de status por item.
-export function useUltimoStatusPorTarefa(tarefaIds) {
-  const results = useQueries({
-    queries: tarefaIds.map((tarefaId) => ({
-      queryKey: ['comprovacoes', tarefaId],
-      queryFn: async () => (await comprovacaoApi.listarComprovacoesPorTarefa(tarefaId)).data ?? [],
-    })),
-  });
-
-  const statusPorTarefa = {};
-  tarefaIds.forEach((tarefaId, index) => {
-    const comprovacoes = results[index]?.data ?? [];
-    statusPorTarefa[tarefaId] = comprovacoes[comprovacoes.length - 1]?.status ?? null;
-  });
-  return statusPorTarefa;
 }
 
 export function useFotoComprovacao(comprovacaoId) {
@@ -36,11 +18,18 @@ export function useFotoComprovacao(comprovacaoId) {
   });
 }
 
+// Enviar/validar comprovação muda o `status` derivado da tarefa (ver seção 5
+// da spec), então as queries de tarefa também precisam ser invalidadas —
+// senão a lista/detalhe continuam mostrando o status antigo até um refresh manual.
 export function useEnviarComprovacao(tarefaId) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: comprovacaoApi.enviarComprovacao,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comprovacoes', tarefaId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comprovacoes', tarefaId] });
+      queryClient.invalidateQueries({ queryKey: ['tarefas'] });
+      queryClient.invalidateQueries({ queryKey: ['tarefa', tarefaId] });
+    },
   });
 }
 
@@ -51,6 +40,8 @@ export function useValidarComprovacao(tarefaId) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comprovacoes', tarefaId] });
       queryClient.invalidateQueries({ queryKey: ['pontuacao'] });
+      queryClient.invalidateQueries({ queryKey: ['tarefas'] });
+      queryClient.invalidateQueries({ queryKey: ['tarefa', tarefaId] });
     },
   });
 }

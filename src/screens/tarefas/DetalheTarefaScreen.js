@@ -113,7 +113,10 @@ export function DetalheTarefaScreen({ route, navigation }) {
       <FormError message={error} />
 
       <Card style={styles.card}>
-        <Text style={styles.title}>{tarefa.titulo}</Text>
+        <View style={styles.tituloRow}>
+          <Text style={styles.title}>{tarefa.titulo}</Text>
+          <StatusBadge status={tarefa.status} type="tarefa" />
+        </View>
         {tarefa.descricao ? <Text style={styles.descricao}>{tarefa.descricao}</Text> : null}
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Pontos</Text>
@@ -199,7 +202,8 @@ export function DetalheTarefaScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   centered: { justifyContent: 'center', alignItems: 'center' },
   card: { marginBottom: spacing.md },
-  title: { ...typography.title, color: colors.text, marginBottom: spacing.xs },
+  tituloRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: spacing.sm },
+  title: { ...typography.title, color: colors.text, marginBottom: spacing.xs, flexShrink: 1 },
   descricao: { ...typography.body, color: colors.textMuted, marginBottom: spacing.sm },
   subtitle: { ...typography.subtitle, color: colors.text },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.xs },

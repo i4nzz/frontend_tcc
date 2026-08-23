@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { FlatList, Pressable, Text, View, StyleSheet, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '../../components/Button';
@@ -6,7 +5,6 @@ import { StatusBadge } from '../../components/StatusBadge';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingView } from '../../components/LoadingView';
 import { useTarefas, useTarefasPorFilho } from '../../hooks/useTarefas';
-import { useUltimoStatusPorTarefa } from '../../hooks/useComprovacoes';
 import { useAuthStore } from '../../store/authStore';
 import { colors, radius, spacing, typography } from '../../theme';
 
@@ -22,9 +20,6 @@ export function ListaTarefasScreen({ route, navigation }) {
   const porFilhoQuery = useTarefasPorFilho(isPai ? filhoId : undefined);
   const todasQuery = useTarefas({ enabled: !isPai });
   const { data: tarefas = [], isLoading, refetch, isRefetching } = isPai ? porFilhoQuery : todasQuery;
-
-  const tarefaIds = useMemo(() => tarefas.map((t) => t.tarefaId), [tarefas]);
-  const statusPorTarefa = useUltimoStatusPorTarefa(tarefaIds);
 
   if (isLoading) return <LoadingView />;
 
@@ -46,34 +41,31 @@ export function ListaTarefasScreen({ route, navigation }) {
             }
           />
         }
-        renderItem={({ item }) => {
-          const status = statusPorTarefa[item.tarefaId];
-          return (
-            <Pressable
-              onPress={() => navigation.navigate('DetalheTarefa', { tarefaId: item.tarefaId })}
-              style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-            >
-              <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle} numberOfLines={1}>
-                  {item.titulo}
-                </Text>
-                {status ? <StatusBadge status={status} /> : null}
+        renderItem={({ item }) => (
+          <Pressable
+            onPress={() => navigation.navigate('DetalheTarefa', { tarefaId: item.tarefaId })}
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+          >
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle} numberOfLines={1}>
+                {item.titulo}
+              </Text>
+              <StatusBadge status={item.status} type="tarefa" />
+            </View>
+            {item.descricao ? (
+              <Text style={styles.cardDescricao} numberOfLines={2}>
+                {item.descricao}
+              </Text>
+            ) : null}
+            <View style={styles.cardFooter}>
+              <View style={styles.pointsRow}>
+                <Ionicons name="star" size={16} color={colors.star} />
+                <Text style={styles.pointsText}>{item.pontos} pts</Text>
               </View>
-              {item.descricao ? (
-                <Text style={styles.cardDescricao} numberOfLines={2}>
-                  {item.descricao}
-                </Text>
-              ) : null}
-              <View style={styles.cardFooter}>
-                <View style={styles.pointsRow}>
-                  <Ionicons name="star" size={16} color={colors.star} />
-                  <Text style={styles.pointsText}>{item.pontos} pts</Text>
-                </View>
-                <Text style={styles.prazoText}>até {formatarPrazo(item.prazo)}</Text>
-              </View>
-            </Pressable>
-          );
-        }}
+              <Text style={styles.prazoText}>até {formatarPrazo(item.prazo)}</Text>
+            </View>
+          </Pressable>
+        )}
       />
       {isPai ? (
         <View style={styles.footer}>

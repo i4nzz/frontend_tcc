@@ -81,10 +81,6 @@ export function CadastrarFilhoScreen({ navigation }) {
 
       <Button title="Cadastrar filho" onPress={handleCadastrar} loading={loading} />
 
-      <Text style={styles.devNote}>
-        Nota (dev): o backend atual não confirma o e-mail do filho automaticamente ao criá-lo, então ele não
-        conseguirá logar até esse bug ser corrigido na API (ver seção 3 da spec).
-      </Text>
     </ScreenContainer>
   );
 }
