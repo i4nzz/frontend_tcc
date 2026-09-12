@@ -5,7 +5,12 @@ import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingView } from '../../components/LoadingView';
 import { FormError } from '../../components/FormError';
-import { useRecompensasPorFilho, useRemoverRecompensa, useResgatarRecompensa } from '../../hooks/useRecompensas';
+import {
+  useAtivarRecompensa,
+  useRecompensasPorFilho,
+  useRemoverRecompensa,
+  useResgatarRecompensa,
+} from '../../hooks/useRecompensas';
 import { useSaldoTotal } from '../../hooks/usePontuacao';
 import { useAuthStore } from '../../store/authStore';
 import { colors, radius, spacing, typography } from '../../theme';
@@ -15,9 +20,11 @@ export function RecompensasScreen({ route, navigation }) {
   const perfil = useAuthStore((state) => state.user?.perfil);
   const isPai = perfil === 'Pai';
 
-  const { data: recompensas = [], isLoading, refetch, isRefetching } = useRecompensasPorFilho(filhoId);
+  const { data: todasRecompensas = [], isLoading, refetch, isRefetching } = useRecompensasPorFilho(filhoId);
+  const recompensas = isPai ? todasRecompensas : todasRecompensas.filter((item) => item.ativa);
   const { data: saldo = 0 } = useSaldoTotal(filhoId);
   const removerRecompensa = useRemoverRecompensa(filhoId);
+  const ativarRecompensa = useAtivarRecompensa(filhoId);
   const resgatarRecompensa = useResgatarRecompensa(filhoId);
   const [error, setError] = useState(null);
 
@@ -42,6 +49,15 @@ export function RecompensasScreen({ route, navigation }) {
         },
       },
     ]);
+  }
+
+  async function handleAtivar(recompensa) {
+    setError(null);
+    try {
+      await ativarRecompensa.mutateAsync(recompensa.id);
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   function handleResgatar(recompensa) {
@@ -91,7 +107,9 @@ export function RecompensasScreen({ route, navigation }) {
                   <Text style={styles.pointsText}>{item.pontosNecessarios}</Text>
                 </View>
               </View>
-              {!item.ativa ? <Text style={styles.inativaLabel}>Inativa</Text> : null}
+              {!item.ativa ? (
+                <Text style={styles.inativaLabel}>Desativada — não aparece para o filho</Text>
+              ) : null}
 
               <View style={styles.cardActions}>
                 {isPai ? (
@@ -102,6 +120,14 @@ export function RecompensasScreen({ route, navigation }) {
                       onPress={() => navigation.navigate('CriarEditarRecompensa', { recompensaId: item.id, filhoId })}
                       style={styles.actionButton}
                     />
+                    {!item.ativa ? (
+                      <Button
+                        title="Ativar"
+                        onPress={() => handleAtivar(item)}
+                        loading={ativarRecompensa.isPending}
+                        style={styles.actionButton}
+                      />
+                    ) : null}
                     <Button
                       title={item.ativa ? 'Desativar' : 'Remover'}
                       variant="danger"

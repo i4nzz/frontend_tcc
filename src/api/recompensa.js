@@ -20,6 +20,10 @@ export function removerRecompensa(id) {
   return apiRequest(`/Recompensa/Remover/${id}`, { method: 'DELETE' });
 }
 
+export function ativarRecompensa(id) {
+  return apiRequest(`/Recompensa/Ativar/${id}`, { method: 'PUT' });
+}
+
 export function resgatarRecompensa(filhoId, recompensaId) {
   return apiRequest(`/Recompensa/Resgatar/${filhoId}/${recompensaId}`, { method: 'POST' });
 }

@@ -49,6 +49,14 @@ export function useRemoverRecompensa(filhoId) {
   });
 }
 
+export function useAtivarRecompensa(filhoId) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: recompensaApi.ativarRecompensa,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['recompensas', filhoId] }),
+  });
+}
+
 export function useResgatarRecompensa(filhoId) {
   const queryClient = useQueryClient();
   return useMutation({
