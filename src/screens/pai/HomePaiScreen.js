@@ -1,29 +1,48 @@
+import { useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingView } from '../../components/LoadingView';
 import { Button } from '../../components/Button';
+import { TextField } from '../../components/TextField';
 import { useMeusFilhos } from '../../hooks/useFilhos';
 import { colors, radius, spacing, typography } from '../../theme';
 
 export function HomePaiScreen({ navigation }) {
   const { data: filhos = [], isLoading, refetch, isRefetching } = useMeusFilhos();
+  const [busca, setBusca] = useState('');
+
+  const filhosFiltrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    if (!termo) return filhos;
+    return filhos.filter((item) => item.nome?.toLowerCase().includes(termo));
+  }, [filhos, busca]);
 
   if (isLoading) return <LoadingView />;
 
   return (
     <View style={styles.container}>
+      {filhos.length > 0 ? (
+        <View style={styles.filtros}>
+          <TextField value={busca} onChangeText={setBusca} placeholder="Buscar filho..." style={styles.buscaField} />
+        </View>
+      ) : null}
+
       <FlatList
-        data={filhos}
+        data={filhosFiltrados}
         keyExtractor={(item) => String(item.id)}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
-          <EmptyState
-            icon="people-outline"
-            title="Nenhum filho cadastrado"
-            subtitle='Toque em "Cadastrar filho" para começar.'
-          />
+          filhos.length === 0 ? (
+            <EmptyState
+              icon="people-outline"
+              title="Nenhum filho cadastrado"
+              subtitle='Toque em "Cadastrar filho" para começar.'
+            />
+          ) : (
+            <EmptyState icon="search-outline" title="Nenhum resultado para o filtro aplicado" />
+          )
         }
         renderItem={({ item }) => (
           <Pressable
@@ -50,6 +69,8 @@ export function HomePaiScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  filtros: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg },
+  buscaField: { marginBottom: 0 },
   list: { padding: spacing.lg, flexGrow: 1 },
   card: {
     flexDirection: 'row',

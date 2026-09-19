@@ -10,6 +10,10 @@ import { useAuthStore } from '../../store/authStore';
 import { MESES_LABEL } from '../../constants/enums';
 import { colors, radius, spacing, typography } from '../../theme';
 
+function formatarValor(valor) {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
 export function NovoRegistroFinanceiroScreen({ route, navigation }) {
   const { filhoId } = route.params;
   const perfil = useAuthStore((state) => state.user?.perfil);
@@ -30,6 +34,8 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
 
   if (loadingMesadas || loadingCategorias) return <LoadingView />;
 
+  const mesadaSelecionada = mesadas.find((mesada) => mesada.mesadaId === mesadaId) ?? null;
+
   async function handleCriarCategoria() {
     setError(null);
     if (!novaCategoria.trim()) {
@@ -48,8 +54,12 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
 
   async function handleSalvar() {
     setError(null);
-    if (!mesadaId) {
+    if (!mesadaId || !mesadaSelecionada) {
       setError('Selecione a mesada.');
+      return;
+    }
+    if (mesadaSelecionada.saldoDisponivel <= 0) {
+      setError('Esta mesada não possui saldo disponível para novos gastos.');
       return;
     }
     if (!categoriaId) {
@@ -63,6 +73,10 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
     const valorNumero = Number(valor.replace(',', '.'));
     if (!Number.isFinite(valorNumero) || valorNumero <= 0) {
       setError('Informe um valor maior que zero.');
+      return;
+    }
+    if (valorNumero > mesadaSelecionada.saldoDisponivel) {
+      setError(`Saldo insuficiente na mesada. Saldo disponível: ${formatarValor(mesadaSelecionada.saldoDisponivel)}`);
       return;
     }
 
@@ -86,18 +100,29 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
 
       <Text style={styles.label}>Mesada</Text>
       <View style={styles.chipRow}>
-        {mesadas.map((mesada) => (
-          <Pressable
-            key={mesada.mesadaId}
-            onPress={() => setMesadaId(mesada.mesadaId)}
-            style={[styles.chip, mesadaId === mesada.mesadaId && styles.chipSelected]}
-          >
-            <Text style={[styles.chipText, mesadaId === mesada.mesadaId && styles.chipTextSelected]}>
-              {MESES_LABEL[mesada.mes - 1]}/{mesada.ano}
-            </Text>
-          </Pressable>
-        ))}
+        {mesadas.map((mesada) => {
+          const semSaldo = mesada.saldoDisponivel <= 0;
+          return (
+            <Pressable
+              key={mesada.mesadaId}
+              onPress={() => !semSaldo && setMesadaId(mesada.mesadaId)}
+              disabled={semSaldo}
+              style={[
+                styles.chip,
+                mesadaId === mesada.mesadaId && styles.chipSelected,
+                semSaldo && styles.chipDisabled,
+              ]}
+            >
+              <Text style={[styles.chipText, mesadaId === mesada.mesadaId && styles.chipTextSelected]}>
+                {MESES_LABEL[mesada.mes - 1]}/{mesada.ano} · {formatarValor(mesada.saldoDisponivel)}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
+      {mesadaSelecionada ? (
+        <Text style={styles.saldoInfo}>Saldo disponível: {formatarValor(mesadaSelecionada.saldoDisponivel)}</Text>
+      ) : null}
 
       <Text style={styles.label}>Categoria</Text>
       <View style={styles.chipRow}>
@@ -141,7 +166,12 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
       />
       <TextField label="Valor" value={valor} onChangeText={setValor} keyboardType="decimal-pad" placeholder="Ex.: 15,50" />
 
-      <Button title="Salvar gasto" onPress={handleSalvar} loading={criarRegistro.isPending} />
+      <Button
+        title="Salvar gasto"
+        onPress={handleSalvar}
+        loading={criarRegistro.isPending}
+        disabled={!mesadaSelecionada || mesadaSelecionada.saldoDisponivel <= 0}
+      />
     </ScreenContainer>
   );
 }
@@ -158,8 +188,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   chipSelected: { borderColor: colors.primary, backgroundColor: colors.primary },
+  chipDisabled: { opacity: 0.4 },
   chipText: { ...typography.body, color: colors.text },
   chipTextSelected: { color: colors.onPrimary, fontWeight: '700' },
+  saldoInfo: { ...typography.caption, color: colors.textMuted, marginTop: -spacing.xs, marginBottom: spacing.md },
   novaCategoriaRow: { flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start', marginBottom: spacing.md },
   novaCategoriaField: { flex: 1, marginBottom: 0 },
   linkText: { ...typography.bodyBold, color: colors.primary, marginBottom: spacing.md },

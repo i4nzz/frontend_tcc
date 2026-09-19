@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, Image, Text, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { File } from 'expo-file-system';
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
@@ -67,14 +68,11 @@ export function DetalheTarefaScreen({ route, navigation }) {
     if (resultado.canceled) return;
 
     const asset = resultado.assets[0];
-    const nomeArquivo = asset.fileName || asset.uri.split('/').pop() || 'foto.jpg';
-    const extensao = nomeArquivo.split('.').pop()?.toLowerCase();
-    const tipo = asset.mimeType || (extensao === 'png' ? 'image/png' : 'image/jpeg');
 
     try {
       await enviarComprovacao.mutateAsync({
         tarefaId,
-        foto: { uri: asset.uri, name: nomeArquivo, type: tipo },
+        foto: new File(asset.uri),
       });
     } catch (err) {
       setError(err.message);

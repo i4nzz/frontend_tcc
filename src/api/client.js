@@ -44,13 +44,27 @@ export async function apiRequest(path, { method = 'GET', body, isFormData = fals
   return { data, message, status: response.status };
 }
 
-function blobToDataUri(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new ApiError('Não foi possível ler a imagem recebida.'));
-    reader.onload = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
+// Codifica em base64 sem passar por Blob/FileReader (nem depender de `btoa`, que
+// não é garantido no runtime do Hermes) — o Blob nativo do RN é lento e gera o
+// aviso "Response.blob() is using React Native's Blob...".
+const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let resultado = '';
+
+  for (let i = 0; i < bytes.length; i += 3) {
+    const b1 = bytes[i];
+    const b2 = bytes[i + 1];
+    const b3 = bytes[i + 2];
+
+    resultado += BASE64_CHARS[b1 >> 2];
+    resultado += BASE64_CHARS[((b1 & 0x03) << 4) | (b2 >> 4 || 0)];
+    resultado += i + 1 < bytes.length ? BASE64_CHARS[((b2 & 0x0f) << 2) | (b3 >> 6 || 0)] : '=';
+    resultado += i + 2 < bytes.length ? BASE64_CHARS[b3 & 0x3f] : '=';
+  }
+
+  return resultado;
 }
 
 // Endpoints de foto exigem Bearer token, então não dá pra usar <Image source={{uri}}>
@@ -73,6 +87,7 @@ export async function fetchAuthenticatedImage(path, { retry = true } = {}) {
     throw new ApiError('Não foi possível carregar a imagem.', { status: response.status });
   }
 
-  const blob = await response.blob();
-  return blobToDataUri(blob);
+  const contentType = response.headers.get('content-type') || 'image/jpeg';
+  const buffer = await response.arrayBuffer();
+  return `data:${contentType};base64,${arrayBufferToBase64(buffer)}`;
 }

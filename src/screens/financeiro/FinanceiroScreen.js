@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ScrollView, Text, View, StyleSheet } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, Text, View, StyleSheet } from 'react-native';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingView } from '../../components/LoadingView';
 import { Card } from '../../components/Card';
@@ -12,6 +12,13 @@ import { MESES_LABEL } from '../../constants/enums';
 import { colors, radius, spacing, typography } from '../../theme';
 
 const CORES_CATEGORIA = [colors.primary, colors.accent, colors.grass, colors.star, colors.sky];
+
+const PERIODOS_GASTO = [
+  { label: 'Tudo', dias: null },
+  { label: '7 dias', dias: 7 },
+  { label: '30 dias', dias: 30 },
+  { label: '90 dias', dias: 90 },
+];
 
 function formatarValor(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -31,11 +38,30 @@ export function FinanceiroScreen({ route, navigation }) {
   const { data: resumo, isLoading: loadingResumo } = useResumoFinanceiro(filhoId);
   const criarMesada = useCriarMesada(filhoId);
 
+  const temMesadaComSaldo = mesadas.some((mesada) => mesada.saldoDisponivel > 0);
+
   const [mostrarFormMesada, setMostrarFormMesada] = useState(false);
   const [valorMesada, setValorMesada] = useState('');
   const [mesMesada, setMesMesada] = useState('');
   const [anoMesada, setAnoMesada] = useState(String(new Date().getFullYear()));
   const [error, setError] = useState(null);
+
+  const [buscaGasto, setBuscaGasto] = useState('');
+  const [periodoGastoDias, setPeriodoGastoDias] = useState(null);
+
+  const registrosFiltrados = useMemo(() => {
+    const termo = buscaGasto.trim().toLowerCase();
+    const limite = periodoGastoDias ? Date.now() - periodoGastoDias * 24 * 60 * 60 * 1000 : null;
+
+    return registros.filter((registro) => {
+      const combinaTermo =
+        !termo ||
+        registro.descricao?.toLowerCase().includes(termo) ||
+        registro.nomeCategoria?.toLowerCase().includes(termo);
+      const combinaPeriodo = !limite || new Date(registro.dataRegistro).getTime() >= limite;
+      return combinaTermo && combinaPeriodo;
+    });
+  }, [registros, buscaGasto, periodoGastoDias]);
 
   if (loadingMesadas || loadingRegistros || loadingResumo) return <LoadingView />;
 
@@ -123,9 +149,15 @@ export function FinanceiroScreen({ route, navigation }) {
       ) : (
         mesadas.map((mesada) => (
           <Card key={mesada.mesadaId} style={styles.mesadaCard}>
-            <Text style={styles.mesadaValor}>{formatarValor(mesada.valor)}</Text>
+            <View style={styles.mesadaHeader}>
+              <Text style={styles.mesadaValor}>{formatarValor(mesada.valor)}</Text>
+              <Text style={[styles.mesadaSaldo, mesada.saldoDisponivel <= 0 && styles.mesadaSaldoZerado]}>
+                Saldo: {formatarValor(mesada.saldoDisponivel)}
+              </Text>
+            </View>
             <Text style={styles.mesadaPeriodo}>
               {MESES_LABEL[mesada.mes - 1]} de {mesada.ano}
+              {mesada.valorGasto > 0 ? ` · Gasto: ${formatarValor(mesada.valorGasto)}` : ''}
             </Text>
           </Card>
         ))
@@ -175,10 +207,37 @@ export function FinanceiroScreen({ route, navigation }) {
       ) : null}
 
       <Text style={[styles.sectionTitle, styles.sectionSpacing]}>Gastos</Text>
+
+      {registros.length > 0 ? (
+        <View style={styles.filtros}>
+          <TextField
+            value={buscaGasto}
+            onChangeText={setBuscaGasto}
+            placeholder="Buscar por descrição ou categoria..."
+            style={styles.buscaField}
+          />
+          <View style={styles.chipRow}>
+            {PERIODOS_GASTO.map((periodo) => (
+              <Pressable
+                key={periodo.label}
+                onPress={() => setPeriodoGastoDias(periodo.dias)}
+                style={[styles.chip, periodoGastoDias === periodo.dias && styles.chipSelected]}
+              >
+                <Text style={[styles.chipText, periodoGastoDias === periodo.dias && styles.chipTextSelected]}>
+                  {periodo.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : null}
+
       {registros.length === 0 ? (
         <EmptyState icon="cart-outline" title="Nenhum gasto lançado ainda" />
+      ) : registrosFiltrados.length === 0 ? (
+        <EmptyState icon="search-outline" title="Nenhum resultado para o filtro aplicado" />
       ) : (
-        registros.map((registro) => (
+        registrosFiltrados.map((registro) => (
           <View key={registro.registroId} style={styles.registroItem}>
             <View style={styles.registroInfo}>
               <Text style={styles.registroDescricao} numberOfLines={1}>
@@ -196,10 +255,14 @@ export function FinanceiroScreen({ route, navigation }) {
       <Button
         title="Novo gasto"
         onPress={() => navigation.navigate('NovoRegistroFinanceiro', { filhoId })}
-        disabled={mesadas.length === 0}
+        disabled={!temMesadaComSaldo}
         style={styles.sectionButton}
       />
-      {mesadas.length === 0 ? <Text style={styles.hint}>Cadastre uma mesada antes de lançar um gasto.</Text> : null}
+      {mesadas.length === 0 ? (
+        <Text style={styles.hint}>Cadastre uma mesada antes de lançar um gasto.</Text>
+      ) : !temMesadaComSaldo ? (
+        <Text style={styles.hint}>Nenhuma mesada com saldo disponível para lançar gastos.</Text>
+      ) : null}
     </ScrollView>
   );
 }
@@ -223,11 +286,28 @@ const styles = StyleSheet.create({
   barraPreenchida: { height: '100%', borderRadius: radius.pill },
   sectionButton: { marginTop: spacing.sm },
   mesadaCard: { marginBottom: spacing.sm },
+  mesadaHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   mesadaValor: { ...typography.title, color: colors.primary },
+  mesadaSaldo: { ...typography.bodyBold, color: colors.success },
+  mesadaSaldoZerado: { color: colors.danger },
   mesadaPeriodo: { ...typography.body, color: colors.textMuted },
   formCard: { marginBottom: spacing.sm },
   row: { flexDirection: 'row', gap: spacing.sm },
   rowField: { flex: 1 },
+  filtros: { marginBottom: spacing.sm },
+  buscaField: { marginBottom: spacing.sm },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.md },
+  chip: {
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: colors.surface,
+  },
+  chipSelected: { borderColor: colors.primary, backgroundColor: colors.primary },
+  chipText: { ...typography.body, color: colors.text },
+  chipTextSelected: { color: colors.onPrimary, fontWeight: '700' },
   registroItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',

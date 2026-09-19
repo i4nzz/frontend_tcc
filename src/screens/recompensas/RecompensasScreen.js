@@ -110,31 +110,36 @@ export function RecompensasScreen({ route, navigation }) {
               {!item.ativa ? (
                 <Text style={styles.inativaLabel}>Desativada — não aparece para o filho</Text>
               ) : null}
+              {item.resgatada ? (
+                <Text style={styles.resgatadaLabel}>Já resgatada — não pode mais ser editada ou desativada</Text>
+              ) : null}
 
               <View style={styles.cardActions}>
                 {isPai ? (
-                  <>
-                    <Button
-                      title="Editar"
-                      variant="secondary"
-                      onPress={() => navigation.navigate('CriarEditarRecompensa', { recompensaId: item.id, filhoId })}
-                      style={styles.actionButton}
-                    />
-                    {!item.ativa ? (
+                  item.resgatada ? null : (
+                    <>
                       <Button
-                        title="Ativar"
-                        onPress={() => handleAtivar(item)}
-                        loading={ativarRecompensa.isPending}
+                        title="Editar"
+                        variant="secondary"
+                        onPress={() => navigation.navigate('CriarEditarRecompensa', { recompensaId: item.id, filhoId })}
                         style={styles.actionButton}
                       />
-                    ) : null}
-                    <Button
-                      title={item.ativa ? 'Desativar' : 'Remover'}
-                      variant="danger"
-                      onPress={() => handleRemover(item)}
-                      style={styles.actionButton}
-                    />
-                  </>
+                      {!item.ativa ? (
+                        <Button
+                          title="Ativar"
+                          onPress={() => handleAtivar(item)}
+                          loading={ativarRecompensa.isPending}
+                          style={styles.actionButton}
+                        />
+                      ) : null}
+                      <Button
+                        title={item.ativa ? 'Desativar' : 'Remover'}
+                        variant="danger"
+                        onPress={() => handleRemover(item)}
+                        style={styles.actionButton}
+                      />
+                    </>
+                  )
                 ) : (
                   <Button
                     title="Resgatar"
@@ -183,6 +188,7 @@ const styles = StyleSheet.create({
   },
   pointsText: { ...typography.bodyBold, color: colors.text },
   inativaLabel: { ...typography.caption, color: colors.danger, marginTop: spacing.xs },
+  resgatadaLabel: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
   cardActions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
   actionButton: { flex: 1 },
   footer: { padding: spacing.lg, backgroundColor: colors.background },

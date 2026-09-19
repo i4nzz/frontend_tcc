@@ -1,4 +1,5 @@
-import { SafeAreaView, ScrollView, View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing } from '../theme';
 
 export function ScreenContainer({ children, scroll = true, style }) {
