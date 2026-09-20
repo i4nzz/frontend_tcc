@@ -53,9 +53,30 @@ export function HomePaiScreen({ navigation }) {
               <Ionicons name="person" size={24} color={colors.primary} />
             </View>
             <View style={styles.cardInfo}>
-              <Text style={styles.cardName}>{item.nome}</Text>
+              <View style={styles.cardNameRow}>
+                <Text style={styles.cardName}>{item.nome}</Text>
+                <View style={[styles.statusBadge, item.ativo ? styles.statusBadgeAtivo : styles.statusBadgeInativo]}>
+                  <Text style={[styles.statusText, item.ativo ? styles.statusTextAtivo : styles.statusTextInativo]}>
+                    {item.ativo ? 'Ativo' : 'Inativo'}
+                  </Text>
+                </View>
+              </View>
               <Text style={styles.cardHint}>Ver tarefas, pontos e recompensas</Text>
             </View>
+            <Pressable
+              onPress={() =>
+                navigation.navigate('EditarFilho', {
+                  filhoId: item.id,
+                  nome: item.nome,
+                  email: item.email,
+                  ativo: item.ativo,
+                })
+              }
+              hitSlop={8}
+              style={styles.editIcon}
+            >
+              <Ionicons name="create-outline" size={20} color={colors.primary} />
+            </Pressable>
             <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
           </Pressable>
         )}
@@ -93,7 +114,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardInfo: { flex: 1 },
+  editIcon: { padding: spacing.xs },
+  cardNameRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   cardName: { ...typography.subtitle, color: colors.text },
+  statusBadge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: radius.pill },
+  statusBadgeAtivo: { backgroundColor: colors.successBg },
+  statusBadgeInativo: { backgroundColor: colors.dangerBg },
+  statusText: { ...typography.caption, fontWeight: '700' },
+  statusTextAtivo: { color: colors.success },
+  statusTextInativo: { color: colors.danger },
   cardHint: { ...typography.caption, color: colors.textMuted, marginTop: 2 },
   footer: { padding: spacing.lg },
 });

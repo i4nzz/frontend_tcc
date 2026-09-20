@@ -31,3 +31,17 @@ export function listarMeusFilhos() {
 export function obterMeuPerfil() {
   return apiRequest('/Usuario/MeuPerfil');
 }
+
+export function atualizarUsuario(id, { nome, email, novaSenha }) {
+  return apiRequest(`/Usuario/AtualizarUsuario/${id}`, {
+    method: 'PUT',
+    body: { nome, email, novaSenha: novaSenha || undefined },
+  });
+}
+
+export function alterarStatusUsuario(id, ativo) {
+  return apiRequest(`/Usuario/AlterarStatus/${id}`, {
+    method: 'PATCH',
+    body: { ativo },
+  });
+}

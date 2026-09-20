@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomePaiScreen } from '../screens/pai/HomePaiScreen';
 import { CadastrarFilhoScreen } from '../screens/pai/CadastrarFilhoScreen';
+import { EditarFilhoScreen } from '../screens/pai/EditarFilhoScreen';
 import { FilhoAreaTabs } from './FilhoAreaTabs';
 import { DetalheTarefaScreen } from '../screens/tarefas/DetalheTarefaScreen';
 import { CriarEditarTarefaScreen } from '../screens/tarefas/CriarEditarTarefaScreen';
@@ -32,6 +33,7 @@ export function PaiStackNavigator({ navigation: drawerNavigation }) {
         }}
       />
       <Stack.Screen name="CadastrarFilho" component={CadastrarFilhoScreen} options={{ title: 'Cadastrar filho' }} />
+      <Stack.Screen name="EditarFilho" component={EditarFilhoScreen} options={{ title: 'Editar filho' }} />
       <Stack.Screen
         name="FilhoArea"
         component={FilhoAreaTabs}
