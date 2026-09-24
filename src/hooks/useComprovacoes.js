@@ -27,6 +27,11 @@ export function useEnviarComprovacao(tarefaId) {
     mutationFn: comprovacaoApi.enviarComprovacao,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comprovacoes', tarefaId] });
+      // A substituição de foto (comprovação ainda pendente) reaproveita o mesmo
+      // comprovacaoId/ImagemId no backend, então a query da foto tem que ser
+      // invalidada por completo aqui — senão o cache (staleTime: Infinity)
+      // continua servindo a imagem antiga mesmo após o envio da nova.
+      queryClient.invalidateQueries({ queryKey: ['comprovacao-foto'] });
       queryClient.invalidateQueries({ queryKey: ['tarefas'] });
       queryClient.invalidateQueries({ queryKey: ['tarefa', tarefaId] });
     },
