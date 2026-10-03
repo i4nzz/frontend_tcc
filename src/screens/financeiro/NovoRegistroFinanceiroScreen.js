@@ -9,12 +9,15 @@ import { useMesadasPorFilho, useCategorias, useCriarCategoria, useCriarRegistroF
 import { useAuthStore } from '../../store/authStore';
 import { MESES_LABEL } from '../../constants/enums';
 import { colors, radius, spacing, typography } from '../../theme';
+import { useTema } from '../../store/preferenciasStore';
 
 function formatarValor(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 export function NovoRegistroFinanceiroScreen({ route, navigation }) {
+  const tema = useTema();
+  const estiloChipSelecionado = { borderColor: tema.primary, backgroundColor: tema.primary };
   const { filhoId } = route.params;
   const perfil = useAuthStore((state) => state.user?.perfil);
   const isPai = perfil === 'Pai';
@@ -109,7 +112,7 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
               disabled={semSaldo}
               style={[
                 styles.chip,
-                mesadaId === mesada.mesadaId && styles.chipSelected,
+                mesadaId === mesada.mesadaId && estiloChipSelecionado,
                 semSaldo && styles.chipDisabled,
               ]}
             >
@@ -130,7 +133,7 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
           <Pressable
             key={categoria.categoriaFinanceiraId}
             onPress={() => setCategoriaId(categoria.categoriaFinanceiraId)}
-            style={[styles.chip, categoriaId === categoria.categoriaFinanceiraId && styles.chipSelected]}
+            style={[styles.chip, categoriaId === categoria.categoriaFinanceiraId && estiloChipSelecionado]}
           >
             <Text style={[styles.chipText, categoriaId === categoria.categoriaFinanceiraId && styles.chipTextSelected]}>
               {categoria.nome}
@@ -151,7 +154,7 @@ export function NovoRegistroFinanceiroScreen({ route, navigation }) {
             <Button title="Adicionar" onPress={handleCriarCategoria} loading={criarCategoria.isPending} />
           </View>
         ) : (
-          <Text style={styles.linkText} onPress={() => setMostrarNovaCategoria(true)}>
+          <Text style={[styles.linkText, { color: tema.primary }]} onPress={() => setMostrarNovaCategoria(true)}>
             + Criar nova categoria
           </Text>
         )
@@ -187,13 +190,12 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     backgroundColor: colors.surface,
   },
-  chipSelected: { borderColor: colors.primary, backgroundColor: colors.primary },
   chipDisabled: { opacity: 0.4 },
   chipText: { ...typography.body, color: colors.text },
   chipTextSelected: { color: colors.onPrimary, fontWeight: '700' },
   saldoInfo: { ...typography.caption, color: colors.textMuted, marginTop: -spacing.xs, marginBottom: spacing.md },
   novaCategoriaRow: { flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start', marginBottom: spacing.md },
   novaCategoriaField: { flex: 1, marginBottom: 0 },
-  linkText: { ...typography.bodyBold, color: colors.primary, marginBottom: spacing.md },
+  linkText: { ...typography.bodyBold, marginBottom: spacing.md },
   marginTop: { marginTop: spacing.sm },
 });

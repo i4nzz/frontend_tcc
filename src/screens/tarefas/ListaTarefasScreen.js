@@ -10,6 +10,7 @@ import { useTarefas, useTarefasPorFilho } from '../../hooks/useTarefas';
 import { useAuthStore } from '../../store/authStore';
 import { StatusTarefa, StatusValidacaoTarefa } from '../../constants/enums';
 import { colors, radius, spacing, typography } from '../../theme';
+import { useTema } from '../../store/preferenciasStore';
 
 function formatarPrazo(prazoIso) {
   return new Date(prazoIso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -30,6 +31,8 @@ const STATUS_FILTROS = [
 ];
 
 export function ListaTarefasScreen({ route, navigation }) {
+  const tema = useTema();
+  const estiloChipSelecionado = { borderColor: tema.primary, backgroundColor: tema.primary };
   const { filhoId, nomeFilho } = route.params;
   const perfil = useAuthStore((state) => state.user?.perfil);
   const isPai = perfil === 'Pai';
@@ -75,7 +78,7 @@ export function ListaTarefasScreen({ route, navigation }) {
               <Pressable
                 key={periodo.label}
                 onPress={() => setPeriodoDias(periodo.dias)}
-                style={[styles.chip, periodoDias === periodo.dias && styles.chipSelected]}
+                style={[styles.chip, periodoDias === periodo.dias && estiloChipSelecionado]}
               >
                 <Text style={[styles.chipText, periodoDias === periodo.dias && styles.chipTextSelected]}>
                   {periodo.label}
@@ -88,7 +91,7 @@ export function ListaTarefasScreen({ route, navigation }) {
               <Pressable
                 key={status.label}
                 onPress={() => setStatusFiltro(status.valor)}
-                style={[styles.chip, statusFiltro === status.valor && styles.chipSelected]}
+                style={[styles.chip, statusFiltro === status.valor && estiloChipSelecionado]}
               >
                 <Text style={[styles.chipText, statusFiltro === status.valor && styles.chipTextSelected]}>
                   {status.label}
@@ -170,7 +173,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     backgroundColor: colors.surface,
   },
-  chipSelected: { borderColor: colors.primary, backgroundColor: colors.primary },
   chipText: { ...typography.body, color: colors.text },
   chipTextSelected: { color: colors.onPrimary, fontWeight: '700' },
   list: { padding: spacing.lg, flexGrow: 1 },

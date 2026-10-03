@@ -12,8 +12,10 @@ import { useMeuPerfil, useAtualizarUsuario } from '../../hooks/useUsuario';
 import { useAuthStore } from '../../store/authStore';
 import { PerfilUsuario, PerfilUsuarioLabel } from '../../constants/enums';
 import { colors, radius, spacing, typography } from '../../theme';
+import { useTema } from '../../store/preferenciasStore';
 
 export function PerfilScreen() {
+  const tema = useTema();
   const { data: perfil, isLoading, isError } = useMeuPerfil();
   const logout = useAuthStore((state) => state.logout);
   const atualizarUsuario = useAtualizarUsuario();
@@ -102,7 +104,7 @@ export function PerfilScreen() {
   return (
     <ScreenContainer>
       <View style={styles.avatar}>
-        <Ionicons name="person" size={36} color={colors.primary} />
+        <Ionicons name="person" size={36} color={tema.primary} />
       </View>
 
       <Card style={styles.card}>

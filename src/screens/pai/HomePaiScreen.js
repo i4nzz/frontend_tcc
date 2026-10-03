@@ -7,8 +7,10 @@ import { Button } from '../../components/Button';
 import { TextField } from '../../components/TextField';
 import { useMeusFilhos } from '../../hooks/useFilhos';
 import { colors, radius, spacing, typography } from '../../theme';
+import { useTema } from '../../store/preferenciasStore';
 
 export function HomePaiScreen({ navigation }) {
+  const tema = useTema();
   const { data: filhos = [], isLoading, refetch, isRefetching } = useMeusFilhos();
   const [busca, setBusca] = useState('');
 
@@ -50,7 +52,7 @@ export function HomePaiScreen({ navigation }) {
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
             <View style={styles.avatar}>
-              <Ionicons name="person" size={24} color={colors.primary} />
+              <Ionicons name="person" size={24} color={tema.primary} />
             </View>
             <View style={styles.cardInfo}>
               <View style={styles.cardNameRow}>
@@ -75,7 +77,7 @@ export function HomePaiScreen({ navigation }) {
               hitSlop={8}
               style={styles.editIcon}
             >
-              <Ionicons name="create-outline" size={20} color={colors.primary} />
+              <Ionicons name="create-outline" size={20} color={tema.primary} />
             </Pressable>
             <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
           </Pressable>

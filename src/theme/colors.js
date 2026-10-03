@@ -5,8 +5,8 @@ export const colors = {
   textMuted: '#6B7280',
   border: '#E4DFD3',
 
-  primary: '#2E86C1',
-  primaryDark: '#1F6398',
+  // A cor de destaque (primary/primaryDark) vem da tonalidade escolhida pelo
+  // usuário — ver src/theme/palettes.js e useTema().
   onPrimary: '#FFFFFF',
 
   accent: '#F2994A',

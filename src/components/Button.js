@@ -1,14 +1,19 @@
 import { Pressable, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { colors, radius, spacing, typography } from '../theme';
+import { useTema } from '../store/preferenciasStore';
 
-const VARIANT_STYLES = {
-  primary: { backgroundColor: colors.primary, borderColor: colors.primary, textColor: colors.onPrimary },
-  secondary: { backgroundColor: colors.surface, borderColor: colors.primary, textColor: colors.primary },
-  danger: { backgroundColor: colors.danger, borderColor: colors.danger, textColor: colors.onPrimary },
-};
+function variantesDo(tema) {
+  return {
+    primary: { backgroundColor: tema.primary, borderColor: tema.primary, textColor: colors.onPrimary },
+    secondary: { backgroundColor: colors.surface, borderColor: tema.primary, textColor: tema.primary },
+    danger: { backgroundColor: colors.danger, borderColor: colors.danger, textColor: colors.onPrimary },
+  };
+}
 
 export function Button({ title, onPress, variant = 'primary', loading = false, disabled = false, style }) {
-  const variantStyle = VARIANT_STYLES[variant] ?? VARIANT_STYLES.primary;
+  const tema = useTema();
+  const variantes = variantesDo(tema);
+  const variantStyle = variantes[variant] ?? variantes.primary;
   const isDisabled = disabled || loading;
 
   return (

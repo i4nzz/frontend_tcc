@@ -2,16 +2,19 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { FilhoStackNavigator } from './FilhoStackNavigator';
 import { PerfilScreen } from '../screens/perfil/PerfilScreen';
-import { colors } from '../theme';
+import { OpcoesScreen } from '../screens/opcoes/OpcoesScreen';
+import { colors, headerTitle } from '../theme';
+import { useTema } from '../store/preferenciasStore';
 
 const Drawer = createDrawerNavigator();
 
 export function FilhoNavigator() {
+  const tema = useTema();
   return (
     <Drawer.Navigator
       screenOptions={{
         headerShown: false,
-        drawerActiveTintColor: colors.primary,
+        drawerActiveTintColor: tema.primary,
         drawerInactiveTintColor: colors.text,
         drawerActiveBackgroundColor: colors.warningBg,
       }}
@@ -31,9 +34,23 @@ export function FilhoNavigator() {
           headerShown: true,
           title: 'Perfil',
           headerStyle: { backgroundColor: colors.surface },
+          headerTitleStyle: headerTitle,
           headerTintColor: colors.text,
           headerShadowVisible: false,
           drawerIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="Opcoes"
+        component={OpcoesScreen}
+        options={{
+          headerShown: true,
+          title: 'Opções',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTitleStyle: headerTitle,
+          headerTintColor: colors.text,
+          headerShadowVisible: false,
+          drawerIcon: ({ color, size }) => <Ionicons name="options-outline" size={size} color={color} />,
         }}
       />
     </Drawer.Navigator>

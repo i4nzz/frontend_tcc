@@ -3,13 +3,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { Button } from '../../components/Button';
 import { colors, spacing, typography } from '../../theme';
+import { useTema } from '../../store/preferenciasStore';
 
 export function VerifiqueEmailScreen({ route, navigation }) {
+  const tema = useTema();
   const email = route.params?.email;
 
   return (
     <ScreenContainer style={styles.content}>
-      <Ionicons name="mail-outline" size={48} color={colors.primary} style={styles.icon} />
+      <Ionicons name="mail-outline" size={48} color={tema.primary} style={styles.icon} />
       <Text style={styles.title}>Confira seu e-mail</Text>
       <Text style={styles.body}>
         Enviamos um link de confirmação{email ? ` para ${email}` : ''}. Abra o e-mail e toque no link para
