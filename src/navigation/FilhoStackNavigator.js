@@ -5,7 +5,7 @@ import { DetalheTarefaScreen } from '../screens/tarefas/DetalheTarefaScreen';
 import { NovoRegistroFinanceiroScreen } from '../screens/financeiro/NovoRegistroFinanceiroScreen';
 import { LogoutButton } from '../components/LogoutButton';
 import { MenuButton } from '../components/MenuButton';
-import { colors } from '../theme';
+import { colors, headerTitle } from '../theme';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +17,7 @@ export function FilhoStackNavigator({ navigation: drawerNavigation }) {
     <Stack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: colors.surface },
+        headerTitleStyle: headerTitle,
         headerTintColor: colors.text,
         headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.background },
@@ -27,7 +28,7 @@ export function FilhoStackNavigator({ navigation: drawerNavigation }) {
         component={FilhoAreaTabs}
         initialParams={{ filhoId, nomeFilho }}
         options={{
-          title: nomeFilho ?? 'Task Kids',
+          title: nomeFilho ?? 'Caveat',
           headerLeft: () => <MenuButton onPress={() => drawerNavigation.toggleDrawer()} />,
           headerRight: () => <LogoutButton />,
         }}

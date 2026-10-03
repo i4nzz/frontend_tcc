@@ -10,8 +10,7 @@ import { useMesadasPorFilho, useCriarMesada, useRegistrosPorFilho, useResumoFina
 import { useAuthStore } from '../../store/authStore';
 import { MESES_LABEL } from '../../constants/enums';
 import { colors, radius, spacing, typography } from '../../theme';
-
-const CORES_CATEGORIA = [colors.primary, colors.accent, colors.grass, colors.star, colors.sky];
+import { useTema } from '../../store/preferenciasStore';
 
 const PERIODOS_GASTO = [
   { label: 'Tudo', dias: null },
@@ -29,6 +28,10 @@ function formatarData(iso) {
 }
 
 export function FinanceiroScreen({ route, navigation }) {
+  const tema = useTema();
+  const estiloChipSelecionado = { borderColor: tema.primary, backgroundColor: tema.primary };
+  // Cor de destaque é a primeira da fila; o resto das categorias é fixo.
+  const cores = [tema.primary, colors.accent, colors.grass, colors.star, colors.sky];
   const { filhoId } = route.params;
   const perfil = useAuthStore((state) => state.user?.perfil);
   const isPai = perfil === 'Pai';
@@ -131,7 +134,7 @@ export function FinanceiroScreen({ route, navigation }) {
                         styles.barraPreenchida,
                         {
                           width: `${Math.min(categoria.percentual, 100)}%`,
-                          backgroundColor: CORES_CATEGORIA[index % CORES_CATEGORIA.length],
+                          backgroundColor: cores[index % cores.length],
                         },
                       ]}
                     />
@@ -150,7 +153,7 @@ export function FinanceiroScreen({ route, navigation }) {
         mesadas.map((mesada) => (
           <Card key={mesada.mesadaId} style={styles.mesadaCard}>
             <View style={styles.mesadaHeader}>
-              <Text style={styles.mesadaValor}>{formatarValor(mesada.valor)}</Text>
+              <Text style={[styles.mesadaValor, { color: tema.primary }]}>{formatarValor(mesada.valor)}</Text>
               <Text style={[styles.mesadaSaldo, mesada.saldoDisponivel <= 0 && styles.mesadaSaldoZerado]}>
                 Saldo: {formatarValor(mesada.saldoDisponivel)}
               </Text>
@@ -221,7 +224,7 @@ export function FinanceiroScreen({ route, navigation }) {
               <Pressable
                 key={periodo.label}
                 onPress={() => setPeriodoGastoDias(periodo.dias)}
-                style={[styles.chip, periodoGastoDias === periodo.dias && styles.chipSelected]}
+                style={[styles.chip, periodoGastoDias === periodo.dias && estiloChipSelecionado]}
               >
                 <Text style={[styles.chipText, periodoGastoDias === periodo.dias && styles.chipTextSelected]}>
                   {periodo.label}
@@ -287,7 +290,7 @@ const styles = StyleSheet.create({
   sectionButton: { marginTop: spacing.sm },
   mesadaCard: { marginBottom: spacing.sm },
   mesadaHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  mesadaValor: { ...typography.title, color: colors.primary },
+  mesadaValor: { ...typography.title },
   mesadaSaldo: { ...typography.bodyBold, color: colors.success },
   mesadaSaldoZerado: { color: colors.danger },
   mesadaPeriodo: { ...typography.body, color: colors.textMuted },
@@ -305,7 +308,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     backgroundColor: colors.surface,
   },
-  chipSelected: { borderColor: colors.primary, backgroundColor: colors.primary },
   chipText: { ...typography.body, color: colors.text },
   chipTextSelected: { color: colors.onPrimary, fontWeight: '700' },
   registroItem: {

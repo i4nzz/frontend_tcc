@@ -5,7 +5,7 @@ import { VerifiqueEmailScreen } from '../screens/auth/VerifiqueEmailScreen';
 import { ConfirmarEmailScreen } from '../screens/auth/ConfirmarEmailScreen';
 import { EsqueciSenhaScreen } from '../screens/auth/EsqueciSenhaScreen';
 import { RedefinirSenhaScreen } from '../screens/auth/RedefinirSenhaScreen';
-import { colors } from '../theme';
+import { colors, headerTitle } from '../theme';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +14,7 @@ export function AuthStack() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: colors.surface },
+        headerTitleStyle: headerTitle,
         headerTintColor: colors.text,
         headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.background },

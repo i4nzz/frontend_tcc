@@ -9,7 +9,7 @@ import { CriarEditarRecompensaScreen } from '../screens/recompensas/CriarEditarR
 import { NovoRegistroFinanceiroScreen } from '../screens/financeiro/NovoRegistroFinanceiroScreen';
 import { LogoutButton } from '../components/LogoutButton';
 import { MenuButton } from '../components/MenuButton';
-import { colors } from '../theme';
+import { colors, headerTitle } from '../theme';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +18,7 @@ export function PaiStackNavigator({ navigation: drawerNavigation }) {
     <Stack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: colors.surface },
+        headerTitleStyle: headerTitle,
         headerTintColor: colors.text,
         headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.background },

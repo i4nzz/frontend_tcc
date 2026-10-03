@@ -6,6 +6,7 @@ import { PointsPill } from '../../components/PointsPill';
 import { TextField } from '../../components/TextField';
 import { usePontuacaoPorFilho, useSaldoTotal } from '../../hooks/usePontuacao';
 import { colors, radius, spacing, typography } from '../../theme';
+import { useTema } from '../../store/preferenciasStore';
 
 function formatarData(iso) {
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -19,6 +20,8 @@ const PERIODOS = [
 ];
 
 export function PontuacaoScreen({ route }) {
+  const tema = useTema();
+  const estiloChipSelecionado = { borderColor: tema.primary, backgroundColor: tema.primary };
   const { filhoId } = route.params;
   const {
     data: saldo = 0,
@@ -74,7 +77,7 @@ export function PontuacaoScreen({ route }) {
               <Pressable
                 key={periodo.label}
                 onPress={() => setPeriodoDias(periodo.dias)}
-                style={[styles.chip, periodoDias === periodo.dias && styles.chipSelected]}
+                style={[styles.chip, periodoDias === periodo.dias && estiloChipSelecionado]}
               >
                 <Text style={[styles.chipText, periodoDias === periodo.dias && styles.chipTextSelected]}>
                   {periodo.label}
@@ -135,7 +138,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     backgroundColor: colors.surface,
   },
-  chipSelected: { borderColor: colors.primary, backgroundColor: colors.primary },
   chipText: { ...typography.body, color: colors.text },
   chipTextSelected: { color: colors.onPrimary, fontWeight: '700' },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, flexGrow: 1 },

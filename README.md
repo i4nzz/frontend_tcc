@@ -1,6 +1,6 @@
-# Task Kids — App (React Native / Expo)
+# Caveat — App (React Native / Expo)
 
-App mobile do TCC **Task Kids**: gamifica tarefas domésticas/escolares para crianças e introduz educação financeira infantil através do acompanhamento da mesada. Este repositório é o **frontend**; a API consumida por ele vive em outro projeto (`GestaoTarefas.API`, .NET 8).
+App mobile do TCC **Caveat**: gamifica tarefas domésticas/escolares para crianças e introduz educação financeira infantil através do acompanhamento da mesada. Este repositório é o **frontend**; a API consumida por ele vive em outro projeto (`GestaoTarefas.API`, .NET 8).
 
 Fluxo central da aplicação:
 
