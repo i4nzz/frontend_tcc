@@ -38,7 +38,8 @@ export function FinanceiroScreen({ route, navigation }) {
 
   const { data: mesadas = [], isLoading: loadingMesadas } = useMesadasPorFilho(filhoId);
   const { data: registros = [], isLoading: loadingRegistros } = useRegistrosPorFilho(filhoId);
-  const { data: resumo, isLoading: loadingResumo } = useResumoFinanceiro(filhoId);
+  // O resumo por categoria (gráfico) é só do responsável; o filho vê mesadas e gastos.
+  const { data: resumo, isLoading: loadingResumo } = useResumoFinanceiro(filhoId, { enabled: isPai });
   const criarMesada = useCriarMesada(filhoId);
 
   const temMesadaComSaldo = mesadas.some((mesada) => mesada.saldoDisponivel > 0);
@@ -101,7 +102,7 @@ export function FinanceiroScreen({ route, navigation }) {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <FormError message={error} />
 
-      {resumo && (resumo.totalMesadas > 0 || resumo.totalGasto > 0) ? (
+      {isPai && resumo && (resumo.totalMesadas > 0 || resumo.totalGasto > 0) ? (
         <Card style={styles.resumoCard}>
           <View style={styles.resumoTotais}>
             <View style={styles.resumoItem}>

@@ -374,3 +374,91 @@ export function Lagrima() {
     </>
   );
 }
+
+export function SobrancelhasFeliz() {
+  return (
+    <>
+      <G fill="none" stroke="#363a78" strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round">
+        <G>
+          <Path d="M169.0,180.0 Q171.0,161.0 198.0,157.0" />
+          <Path d="M322.0,126.0 Q338.0,115.0 354.0,130.0" />
+        </G>
+      </G>
+    </>
+  );
+}
+
+export function BocaAberta() {
+  return (
+    <>
+      <G>
+        <Path d="M266.0,270.0 Q295.0,276.0 324.0,268.0 C326.0,289.0 310.0,303.0 295.0,303.0 C280.0,303.0 264.0,289.0 266.0,270.0 Z" fill="#ffffff" stroke="#0e1a2b" strokeWidth="3.6" strokeLinejoin="round" />
+        <Path d="M279.0,293.0 Q295.0,279.0 311.0,293.0 Q296.0,305.0 279.0,293.0 Z" fill="#f19bb0" />
+      </G>
+    </>
+  );
+}
+
+export function SobrancelhasCurioso() {
+  return (
+    <>
+      <G fill="none" stroke="#363a78" strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round">
+        <G>
+          <Path d="M169.0,168.0 Q171.0,147.0 200.0,143.0" />
+          <Path d="M322.0,121.0 L340.0,109.0 Q348.0,115.0 356.0,125.0" />
+        </G>
+      </G>
+    </>
+  );
+}
+
+export function BocaCuriosa() {
+  return (
+    <>
+      <Path d="M284.0,292.0 Q296.0,281.0 311.0,290.0" fill="none" stroke="#0e1a2b" strokeWidth="3.6" strokeLinecap="round" />
+    </>
+  );
+}
+
+export function Interrogacao() {
+  return (
+    <>
+      <G fill="none" stroke="#4a7bc4" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+        <Path d="M440.0,45.0 C440.0,21.0 472.0,21.0 472.0,43.0 C472.0,56.0 457.0,60.0 455.0,71.0 C454.0,75.0 455.0,77.0 455.0,79.0" />
+        <Circle cx="455" cy="93" r="2.6" fill="#4a7bc4" stroke="none" />
+      </G>
+    </>
+  );
+}
+
+export function Brilhos() {
+  return (
+    <>
+      <G>
+        <Path d="M432.0,116.0 Q434.4,128.6 447.0,131.0 Q434.4,133.4 432.0,146.0 Q429.6,133.4 417.0,131.0 Q429.6,128.6 432.0,116.0 Z" fill="#f3c744" stroke="#c8962b" strokeWidth="2" strokeLinejoin="round" />
+        <Path d="M447.0,155.0 Q448.3,161.7 455.0,163.0 Q448.3,164.3 447.0,171.0 Q445.7,164.3 439.0,163.0 Q445.7,161.7 447.0,155.0 Z" fill="#f3c744" stroke="#c8962b" strokeWidth="2" strokeLinejoin="round" />
+      </G>
+    </>
+  );
+}
+
+export function Confete() {
+  return (
+    <>
+      <G>
+        <Path d="M20.0,46.0 Q21.4,53.6 29.0,55.0 Q21.4,56.4 20.0,64.0 Q18.6,56.4 11.0,55.0 Q18.6,53.6 20.0,46.0 Z" fill="#f3c744" stroke="none" />
+        <Circle cx="46" cy="101" r="4.5" fill="#f19bb0" />
+        <Ellipse cx="10" cy="145" rx="3.2" ry="8" rotation="74" originX="10" originY="145" fill="#6b70c4" />
+        <Path d="M40.0,178.0 Q41.4,185.6 49.0,187.0 Q41.4,188.4 40.0,196.0 Q38.6,188.4 31.0,187.0 Q38.6,185.6 40.0,178.0 Z" fill="#4a7bc4" stroke="none" />
+        <Circle cx="18" cy="229" r="4.5" fill="#f3c744" />
+        <Ellipse cx="442" cy="75" rx="3.2" ry="8" rotation="5" originX="442" originY="75" fill="#f19bb0" />
+        <Path d="M472.0,116.0 Q473.4,123.6 481.0,125.0 Q473.4,126.4 472.0,134.0 Q470.6,126.4 463.0,125.0 Q470.6,123.6 472.0,116.0 Z" fill="#6b70c4" stroke="none" />
+        <Circle cx="432" cy="161" r="4.5" fill="#4a7bc4" />
+        <Ellipse cx="466" cy="197" rx="3.2" ry="8" rotation="26" originX="466" originY="197" fill="#f3c744" />
+        <Path d="M444.0,234.0 Q445.4,241.6 453.0,243.0 Q445.4,244.4 444.0,252.0 Q442.6,244.4 435.0,243.0 Q442.6,241.6 444.0,234.0 Z" fill="#f19bb0" stroke="none" />
+        <Circle cx="62" cy="33" r="4.5" fill="#6b70c4" />
+        <Ellipse cx="412" cy="37" rx="3.2" ry="8" rotation="47" originX="412" originY="37" fill="#4a7bc4" />
+      </G>
+    </>
+  );
+}

@@ -154,6 +154,14 @@ const ALVOS = [
   { nome: 'SobrancelhasTriste', id: 'sobrancelhas-triste', modo: 'self' },
   { nome: 'BocaTriste', id: 'boca-triste', modo: 'self' },
   { nome: 'Lagrima', id: 'lagrima', modo: 'self' },
+  // Questionário: expressões feliz e curiosa, mais as decorações de pergunta e comemoração.
+  { nome: 'SobrancelhasFeliz', id: 'sobrancelhas-feliz', modo: 'self' },
+  { nome: 'BocaAberta', id: 'boca-aberta', modo: 'self' },
+  { nome: 'SobrancelhasCurioso', id: 'sobrancelhas-curioso', modo: 'self' },
+  { nome: 'BocaCuriosa', id: 'boca-curiosa', modo: 'self' },
+  { nome: 'Interrogacao', id: 'interrogacao', modo: 'self' },
+  { nome: 'Brilhos', id: 'brilhos', modo: 'self' },
+  { nome: 'Confete', id: 'confete', modo: 'self' },
 ];
 
 const partes = ALVOS.map(({ nome, id, modo, pular }) => {

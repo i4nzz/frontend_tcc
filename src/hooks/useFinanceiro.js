@@ -57,10 +57,10 @@ export function useCriarRegistroFinanceiro(filhoId) {
   });
 }
 
-export function useResumoFinanceiro(filhoId) {
+export function useResumoFinanceiro(filhoId, { enabled = true } = {}) {
   return useQuery({
     queryKey: ['resumo-financeiro', filhoId],
     queryFn: async () => (await registroApi.obterResumoFinanceiro(filhoId)).data ?? null,
-    enabled: !!filhoId,
+    enabled: !!filhoId && enabled,
   });
 }
